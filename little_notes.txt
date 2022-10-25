@@ -1,0 +1,30 @@
+G = 1 / (w - eps0 - Sigma0 - Sigma)
+SigmaTot = Sigma0 + Sigma
+G^{-1} = w - eps0 - Sigma - Sigma0
+Sigma0 = w - eps0 - Sigma - 1/G
+
+SigmaTot + 1/G + eps0 = diff ?= w
+
+
+diff = w - eps0 - Sigma - 1/G
+We really have
+diff = Sigma0
+- Im(diff) / pi = Delta
+
+Therefore, the relation is
+G = 1 / ( w - eps0 - Sigma0 - Sigma)
+where Delta = - Im(Sigma0) / pi
+Sigma0 = w - eps0 - Sigma - 1/G
+# no caso da DMFT
+Sigma0 = w + mu - Sigma - 1/G
+
+O "Sigma" do sig.out na verdade é só a parte interagente.
+
+# DMFT geral
+G0^{-1} = w + mu - Sigma0 = Sigma_I + 1/G
+Delta = - Im(Sigma0) / pi
+Sigma0 = w + mu - Sigma_I - 1/G
+
+# Bethe lattice
+G0^{-1} = w + mu - t^2 G
+Sigma0 = t^2 G

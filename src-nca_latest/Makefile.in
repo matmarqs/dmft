@@ -1,0 +1,45 @@
+
+#===========================================================================
+# Please set environment variable WIEN_DMFT_ROOT (in ~/.bashrc) to the same path as DESTDIR in this Makefile
+DESTDIR = /home/sekai/Documents/Studies/physics/greg/dmft/eDMFT-rutgers/bin
+#------------- SERIAL VERSION ----------------------------------------------
+F90 = gfortran
+F77 = gfortran
+C++ = g++
+CC  = gcc
+
+OPENMP = -fopenmp
+FFLAGS = -O2  -ffree-form -ffree-line-length-none $(OPENMP) 
+OFLAGS = -O2 
+
+LALIB  =  -lblas -llapack
+FFTLIB =  -lfftw3_omp -lfftw3
+FFTINC =   -I/usr/include
+GSLLIB =  -lgslcblas -lgsl
+GSLINC =   -I/usr/include
+PIC    =  -fPIC
+WFOPT  = -O2  -ffree-form -ffree-line-length-none $(OPENMP)  $(FFTINC)
+WLIBS   = $(FFTLIB)  $(LALIB)
+F2PL =
+
+F2PY_LAPACK = --link-lapack_opt
+
+#------------- PARALLEL VERSION --------------------------------------------
+Fmpi_define =  
+
+PF90 = gfortran 
+PC++ = g++
+PCC  = gcc 
+
+PFLAGS   =  -DMPICH_IGNORE_CXX_SEEK -O3 #-restrict -ipo -no-prec-div 
+
+LLIBS = $(LALIB)
+PLIBS = $(LLIBS) $(GSLLIB)
+
+#
+CMP = f2py --opt='-O2' --fcompiler=gnu95   # fortran to python converter
+CMPLIBS  = --f90flags='-openmp ' --link-lapack_opt
+CMPLIBS2 = --f90flags=' $(OPENMP) ' $(CMPLIBS)
+#
+
+#============================================================================

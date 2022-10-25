@@ -1,0 +1,9 @@
+nlevels=1       # Number of impurity levels
+Eimp= [-2.0]     # single-particle energy for each impurity level taken into account
+U0=4.0          # intra-orbital Coulomb repulsion U
+n=[0,1,2]       # Valencies of impurity to be considered for NCA/OCA diagrams
+Ncentral=[1]    # Central valency for OCA diagrams
+qOCA = 1        # Whether to calculate OCA diagrams
+Eoca = 10.0     # Energy cutoff (relative to lowest pseudo-particle) for taking into account OCA diagrams
+mOCA = 0.001    # OCA diagram weight above which OCA diagrams are taken into account
+

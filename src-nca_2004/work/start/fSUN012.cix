@@ -1,0 +1,6 @@
+# Input file for NCA impurity solver. Do not change this file if you are not absolutely aware of what you are doing!
+1 14 3  # Number of baths it's degeneracy an number of all local states
+# i  state  Mtot    Deg   ncabprefactb ncafprefactfprefactG_loc
+  0   0     0      1      1   14   -1    0    1
+  1   1     1     14      2   13    0    1   13
+  2   2     2     91     -1   12    1    2   78
