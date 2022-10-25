@@ -4,21 +4,22 @@ import os, subprocess
 import numpy as np
 from scipy.integrate import simpson as intg
 
-dos_type = 'hypcub'  # 'bethe' or 'hypcub'
-#t = 0.5 # D = 1 as energy unit, incomplete paper
-t = 1.0     # t = 1 as energy unit, Bruno thesis
+dos_type = 'bethe'  # 'bethe' or 'hypcub'
+t = 0.5 # D = 1 as energy unit, incomplete paper
+#t = 1.0     # t = 1 as energy unit, Bruno thesis
 D = 2 * t
-U = 1.7
-#U = 1.75
-#T = 0.0025
-T = 1/7.2   # hypercubic, Bruno thesis
+U = 1.75
+T = 0.0025
+#T = 1/7.2   # hypercubic, Bruno thesis
 mu = U/2.0
 max_err = 1e-4
 alpha = 0.8
 mesh1 = 'ppmesh1.dat'   # file for bath function mesh
 mesh2 = 'ppmesh2.dat'   # file for pp self-energy mesh
+#nca = './nca-2004'
 nca = './nca-latest'
-cix = 'cix=latest/cix.dat'
+#cix = 'cix=cix-2004.dat'
+cix = 'cix=cix-latest.dat'
 w0 = 0.01
 
 
@@ -40,7 +41,8 @@ def broyden_init(v1, f1):
 
 
 def broyden(v2, v1, f2, f1, df, u, m):
-    if m <= 30:
+    #if m <= 30:
+    if 1 == 0:
         df_e = (f2 - f1) / np.linalg.norm(f2 - f1)
         df.append(df_e)
         df_arr = np.array(df, ndmin=2)
@@ -78,10 +80,11 @@ def main():
     # PP self-energies input file
     with open('sig.in', 'w') as sig_input:
         subprocess.run(['./gaumesh.py', mesh2], stdout=sig_input)
-    #freq2 = np.loadtxt('sig.in', unpack=True, ndmin=1)   # ndmin=2 to be a matrix
-    #freq2 = np.loadtxt('sig.in', unpack=True, ndmin=1)   # ndmin=2 to be a matrix
-    #pp_sig = 0*freq2 + U/20.0
-    #np.savetxt('sig.in', np.transpose((freq2, pp_sig, pp_sig, pp_sig)), fmt='%15.8e')
+    if nca == './nca-2004':
+        freq2 = np.loadtxt('sig.in', unpack=True, ndmin=1)   # ndmin=2 to be a matrix
+        freq2 = np.loadtxt('sig.in', unpack=True, ndmin=1)   # ndmin=2 to be a matrix
+        pp_sig = 0*freq2 + U/20.0
+        np.savetxt('sig.in', np.transpose((freq2, pp_sig, pp_sig, pp_sig)), fmt='%15.8e')
 
     # solve SIAM for the first time
     subprocess.call([nca, 'out=out', 'Sig=sig.in', 'Ac=delta.in', cix,
@@ -92,8 +95,10 @@ def main():
 
     Gf = np.array([intg(dos(freq) / (freq[i] + mu - Sig1[i] - freq), freq) for i in ind])
     g0 = 1/(1/Gf + Sig1)
+    ################ trying mixing of G0 ##################################
     #fg1 = g0 - g0_1
     #g0, dg, ug, mg = broyden_init(g0_1, fg1)
+    ################ trying mixing of G0 ##################################
     Delta = - np.imag(freq + mu - 1/g0) / np.pi
     np.savetxt('out/delta.loop', np.transpose((freq, Delta)), fmt='%15.8e')
     # solve SIAM for a second time
@@ -112,11 +117,13 @@ def main():
     diff = np.max(np.abs(Sig2 - Sig1))
     while diff > max_err:
         Gf = np.array([intg(dos(freq) / (freq[i] + mu - Sig2[i] - freq), freq) for i in ind])
+        ################ trying mixing of G0 ##################################
         #fg2 = 1/(1/Gf + Sig2) - g0
         #g0_aux = g0
         #g0, mg = broyden(g0, g0_1, fg2, fg1, dg, ug, mg)
         #g0_1 = g0_aux
         #fg1 = fg2
+        ################ trying mixing of G0 ##################################
         Delta = - np.imag(freq + mu - 1/g0) / np.pi
         np.savetxt('out/delta.loop', np.transpose((freq, Delta)), fmt='%15.8e')
         # solve SIAM. 'Sig=out/Sigma.000' or 'Sig=sig.in'

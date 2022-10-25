@@ -1,1 +1,5 @@
-run/data/
+run/cores.dat
+run/out/
+run/delta.in
+run/sig.in
+run/gf_dmft.out

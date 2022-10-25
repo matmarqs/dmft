@@ -3,6 +3,6 @@
   #     N0 Mtot  deg        Eatom  #b  #f
   0   0.00    0    1     0.000000   1   0      2.000000 x 1     # S  0.0
   1   1.00    1    2     0.000000   1   1      2.000000 x 2       2.000000 x 0     # S  0.5
-  2   2.00    2    1     4.000000   0   1      2.000000 x 1     # S  0.0
+  2   2.00    2    1     0.000000   0   1      2.000000 x 1     # S  0.0
 # OCA diagrams, information is (pp0,pp1,pp2,pp3) (b1,b2) fact , where pp is pseudoparticle and b is bath
   0   1   2   1     0  0 2.0    # [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

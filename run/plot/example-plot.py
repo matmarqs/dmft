@@ -16,19 +16,22 @@ def spectral(ImG):
     return -ImG / np.pi
 
 def main():
-    file = sys.argv[1]
+    filename = sys.argv[1]
     # loading data
-    freq, ReG, ImG = np.loadtxt(file, unpack=True)
-    spectral_func = spectral(ImG)
+    freq, ReG1, ImG1, ReG2, ImG2, ReG3, ImG3 = np.loadtxt(filename, unpack=True)
+    spectral_func1 = spectral(ImG1)
+    spectral_func2 = spectral(ImG2)
+    spectral_func3 = spectral(ImG3)
     # plotting
-    plt.plot(freq,  spectral_func, label=r'$A(\omega)$')
-    #plt.xlim([-5.0, 5.0])
+    plt.plot(freq,  spectral_func1, label=r'$A_1(\omega)$')
+    plt.plot(freq,  spectral_func2, label=r'$A_2(\omega)$')
+    plt.plot(freq,  spectral_func3, label=r'$A_3(\omega)$')
     plt.xlim([-10.0, 10.0])
     plt.xlabel(r'$\omega$', fontsize=20)
     plt.ylabel(r'$A(\omega)$', fontsize=20)
     plt.legend(fontsize=16)
-    plt.title(r'$A(\omega)$'+" of "+file)
-    plt.savefig("specfun.png", dpi=300, format='png', bbox_inches="tight")
+    plt.title(r'$A(\omega)$'+" of "+filename+" in the example")
+    plt.savefig("specfun-examp.png", dpi=300, format='png', bbox_inches="tight")
     plt.clf()
     return 0
 
