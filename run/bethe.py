@@ -4,13 +4,11 @@ import os, subprocess
 import numpy as np
 from scipy.integrate import simpson as intg
 
-version = 'latest'  #version = '2004' or 'latest'
-dos_type = 'bethe'  # 'bethe' or 'hypcub'
-t = 0.5    # Comparacao com NRG
-#t = 0.5     # D = 1 as energy unit, incomplete paper
+version = '2004'  #version = '2004' or 'latest'
+t = 0.5     # D = 1 as energy unit, incomplete paper
 #t = 1.0     # t = 1 as energy unit, Bruno thesis
 D = 2 * t
-U = 1.7
+U = 1.8
 #T = 1e-5
 T = 1/400.0   # hypercubic, Bruno thesis
 mu = U/2.0
@@ -21,16 +19,6 @@ mesh2 = 'ppmesh2.dat'   # file for pp self-energy mesh
 nca = f'./nca-{version}'
 cix = f'cix=cix-{version}.dat'
 w0 = 0.01
-
-
-def dos_bethe(E):   # density of states, bethe lattice
-    return 2/(np.pi*D) * np.sqrt(1 - (np.clip(E, -D, D)/D)**2)
-def dos_hypcub(E):     # density of states, hypercubic lattice
-    return np.exp(-E*E/(t*t)) / (t * np.sqrt(np.pi))
-
-
-def mix(new, old, alpha=0.5):
-    return alpha * new + (1-alpha) * old
 
 
 def broyden_init(v1, f1):
@@ -58,10 +46,6 @@ def broyden(v2, v1, f2, f1, df, u, m):
     return v3, m+1
 
 def main():
-    if dos_type == 'bethe':
-        dos = dos_bethe
-    else:
-        dos = dos_hypcub
 
     if not os.path.exists('out'):   # make sure the directory 'out' exists
         os.makedirs('out')
@@ -70,12 +54,12 @@ def main():
     with open('delta.in', 'w') as delta_input:
         subprocess.run(['./gaumesh.py', mesh1], stdout=delta_input)
     freq = np.loadtxt('delta.in', unpack=True, ndmin=1)   # ndmin=2 to be a matrix
-    ind = range(len(freq))
     # initial guess is Sigma = - U/20 * 1j
-    Gf = np.array([intg(dos(freq) / (freq[i] + mu - U/20.0 * (-1j) - freq), freq) for i in ind])
-    g0 = Gf     # g0 = [ 1/Gf + Sigma ]^{-1}, but Sigma=0 at initial guess
-    #g0_1 = g0
-    Delta = - np.imag(freq + mu - 1/g0) / np.pi
+    z = freq + mu - U/20 * 1j   # zeta
+    s = np.sign(np.imag(z))
+    Gf = 2 / (z + s * np.sqrt(z*z - 4*t*t))
+    g0 = 1/(1/Gf - U/20 * 1j)   # g0 = [ 1/Gf + Sigma ]^{-1}
+    Delta = - np.imag(t * t * Gf) / np.pi
     np.savetxt('delta.in', np.transpose((freq, Delta)), fmt='%15.8e')
     # PP self-energies input file
     with open('sig.in', 'w') as sig_input:
@@ -93,13 +77,11 @@ def main():
     g_imp = Gimp[1] + 1j * Gimp[2]
     Sig1 = 1/g0 - 1/g_imp
 
-    Gf = np.array([intg(dos(freq) / (freq[i] + mu - Sig1[i] - freq), freq) for i in ind])
+    z = freq + mu - Sig1    # zeta
+    s = np.sign(np.imag(z))
+    Gf = 2 / (z + s * np.sqrt(z*z - 4*t*t))
     g0 = 1/(1/Gf + Sig1)
-    ################ trying mixing of G0 ##################################
-    #fg1 = g0 - g0_1
-    #g0, dg, ug, mg = broyden_init(g0_1, fg1)
-    ################ trying mixing of G0 ##################################
-    Delta = - np.imag(freq + mu - 1/g0) / np.pi
+    Delta = - np.imag(t * t * Gf) / np.pi
     np.savetxt('out/delta.loop', np.transpose((freq, Delta)), fmt='%15.8e')
     # solve SIAM for a second time
     subprocess.call([nca, 'out=out', 'Sig=out/Sigma.000', 'Ac=delta.in', cix,
@@ -116,15 +98,11 @@ def main():
     # loop
     diff = np.max(np.abs(Sig2 - Sig1))
     while diff > max_err:
-        Gf = np.array([intg(dos(freq) / (freq[i] + mu - Sig2[i] - freq), freq) for i in ind])
-        ################ trying mixing of G0 ##################################
-        #fg2 = 1/(1/Gf + Sig2) - g0
-        #g0_aux = g0
-        #g0, mg = broyden(g0, g0_1, fg2, fg1, dg, ug, mg)
-        #g0_1 = g0_aux
-        #fg1 = fg2
-        ################ trying mixing of G0 ##################################
-        Delta = - np.imag(freq + mu - 1/g0) / np.pi
+        z = freq + mu - Sig2    # zeta
+        s = np.sign(np.imag(z))
+        Gf = 2 / (z + s * np.sqrt(z*z - 4*t*t))
+        g0 = 1/(1/Gf + Sig2)
+        Delta = - np.imag(t * t * Gf) / np.pi
         np.savetxt('out/delta.loop', np.transpose((freq, Delta)), fmt='%15.8e')
         # solve SIAM. 'Sig=out/Sigma.000' or 'Sig=sig.in'
         subprocess.call([nca, 'out=out', 'Sig=out/Sigma.000', 'Ac=out/delta.loop', cix,
