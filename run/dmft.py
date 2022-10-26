@@ -4,22 +4,22 @@ import os, subprocess
 import numpy as np
 from scipy.integrate import simpson as intg
 
+version = 'latest'  #version = '2004' or 'latest'
 dos_type = 'bethe'  # 'bethe' or 'hypcub'
-t = 0.5 # D = 1 as energy unit, incomplete paper
+t = 0.05    # Comparacao com NRG
+#t = 0.5     # D = 1 as energy unit, incomplete paper
 #t = 1.0     # t = 1 as energy unit, Bruno thesis
 D = 2 * t
-U = 1.75
-T = 0.0025
+U = 0.27
+T = 1e-5
 #T = 1/7.2   # hypercubic, Bruno thesis
 mu = U/2.0
 max_err = 1e-4
 alpha = 0.8
 mesh1 = 'ppmesh1.dat'   # file for bath function mesh
 mesh2 = 'ppmesh2.dat'   # file for pp self-energy mesh
-#nca = './nca-2004'
-nca = './nca-latest'
-#cix = 'cix=cix-2004.dat'
-cix = 'cix=cix-latest.dat'
+nca = f'./nca-{version}'
+cix = f'cix=cix-{version}.dat'
 w0 = 0.01
 
 
@@ -80,7 +80,7 @@ def main():
     # PP self-energies input file
     with open('sig.in', 'w') as sig_input:
         subprocess.run(['./gaumesh.py', mesh2], stdout=sig_input)
-    if nca == './nca-2004':
+    if version == '2004':
         freq2 = np.loadtxt('sig.in', unpack=True, ndmin=1)   # ndmin=2 to be a matrix
         freq2 = np.loadtxt('sig.in', unpack=True, ndmin=1)   # ndmin=2 to be a matrix
         pp_sig = 0*freq2 + U/20.0
