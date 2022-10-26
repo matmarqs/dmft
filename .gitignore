@@ -3,3 +3,5 @@ run/out/
 run/delta.in
 run/sig.in
 run/gf_dmft.out
+**/__pycache__/
+run/figs_nca*/
