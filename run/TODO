@@ -1,0 +1,3 @@
+eu to quase perto de conseguir gerar todas as figuras do paper
+de impurity solvers. o proximo passo é colocar xmin e xmax
+assimétricos apropriados para que o NCA convirja para tudo.

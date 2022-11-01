@@ -23,7 +23,7 @@ def main():
     # plotting
     plt.plot(freq,  spectral_func, label=r'$A(\omega)$')
     #plt.xlim([-5.0, 5.0])
-    plt.xlim([-2.5, 2.5])
+    plt.xlim([-10.0, 10.0])
     plt.xlabel(r'$\omega$', fontsize=20)
     plt.ylabel(r'$A(\omega)$', fontsize=20)
     plt.legend(fontsize=16)

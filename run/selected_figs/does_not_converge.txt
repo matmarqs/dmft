@@ -1,0 +1,1 @@
+Figure 4 (c), Gamma = 0.2 U, T = 0.001 U, e0 = 0. NCA does not converge.

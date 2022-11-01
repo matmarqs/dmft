@@ -4,15 +4,21 @@ import os, subprocess
 import numpy as np
 from scipy.integrate import simpson as intg
 
+# Se Y = \int_{-D}^D 2 w^2/(pi D) * sqrt(1-(w/D)^2) dw
+# então Y = D^2 / 4
+# assim, W = 2 sqrt( int_{-infty}^infty e^2 D(e) de ), eq 219 de georges1996
+# então W = 2 sqrt(Y) = 2 sqrt( D^2 / 8 ) = D.
+# se W = 4 sqrt( int_{-infty}^infty e^2 D(e) de ), no paper bulla1999 (ele pegou D=2)
+# então W = 2 D.
+
 version = 'latest'  #version = '2004' or 'latest'
 dos_type = 'bethe'  # 'bethe' or 'hypcub'
-t = 0.5    # Comparacao com NRG
 #t = 0.5     # D = 1 as energy unit, incomplete paper
-#t = 1.0     # t = 1 as energy unit, Bruno thesis
+t = 1.0     # t = 1 as energy unit, Bruno thesis
 D = 2 * t
-U = 1.7
-#T = 1e-5
-T = 1/400.0   # hypercubic, Bruno thesis
+W = 2*D
+U = 1.75 * W
+T = 0.0025
 mu = U/2.0
 max_err = 1e-4
 alpha = 0.8
@@ -41,8 +47,8 @@ def broyden_init(v1, f1):
 
 
 def broyden(v2, v1, f2, f1, df, u, m):
-    #if m <= 30:
-    if 1 == 0:
+    if m <= 30:
+    #if 1 == 0:
         df_e = (f2 - f1) / np.linalg.norm(f2 - f1)
         df.append(df_e)
         df_arr = np.array(df, ndmin=2)
