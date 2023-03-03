@@ -1,2 +1,3 @@
 # dmft
-Code in development for DMFT loop and NCA impurity solver.
+
+Kristjan Haule's NCA impurity solver and code in development for DMFT loop.
